@@ -193,6 +193,15 @@ const APIUtil = {
       data: queryVal.serialize(),
       success
     });
+  },
+
+  createTweet: (data) => {
+    return $.ajax({
+      method: 'POST',
+      url: '/tweets',
+      dataType: 'JSON',
+      data: data
+    });
   }
 
 };
@@ -247,23 +256,27 @@ module.exports = UsersSearch;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
+const APIUtil = __webpack_require__(2);
 
 class TweetCompose {
-
-  constructor (el) {
+  constructor(el) {
     this.$el = $(el);
-    this.submit = this.$el.find('input[type=submit]');
-    this.userId = this.submit.data('user-id');
-    this.body = this.$el.find('textarea');
-    this.handleSubmit();
+    this.submitButton = this.$el.find('input[type=submit]');
+    // this.userId = this.submitButton.data('user-id');
+    // this.body = this.$el.find('textarea');
+    this.submit();
   }
 
-  handleSubmit() {
-    this.submit.on('click', (e) => {
+  submit() {
+    this.submitButton.on('click', (e) => {
       e.preventDefault();
-      console.log(this.userId);
+      let tweetData = this.$el.serializeJSON();
+      APIUtil.createTweet(tweetData).then((data) => {
+        console.log('hello');
+        console.log(data);
+      });
     });
   }
 }
