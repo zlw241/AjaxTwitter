@@ -4,9 +4,23 @@ class TweetCompose {
   constructor(el) {
     this.$el = $(el);
     this.submitButton = this.$el.find('input[type=submit]');
+    this.feed = this.$el.data('tweets-ul');
     // this.userId = this.submitButton.data('user-id');
     // this.body = this.$el.find('textarea');
     this.submit();
+  }
+
+  clearInput() {
+    this.$el.find('textarea').val('');
+    this.$el.find('select').val('').removeAttr('selected');
+  }
+
+  handleSuccess(tweetData) {
+    this.clearInput();
+    console.log(this.feed);
+    // let tweetData = JSON.stringify(data);
+    let tweetString = `${tweetData.content} -- ${tweetData.user.username} -- ${tweetData.created_at}`;
+    $(this.feed).prepend($(`<li>${tweetString}</li>`));
   }
 
   submit() {
@@ -14,8 +28,7 @@ class TweetCompose {
       e.preventDefault();
       let tweetData = this.$el.serializeJSON();
       APIUtil.createTweet(tweetData).then((data) => {
-        console.log('hello');
-        console.log(data);
+        this.handleSuccess(data);
       });
     });
   }
