@@ -5,9 +5,10 @@ class TweetCompose {
     this.$el = $(el);
     this.submitButton = this.$el.find('input[type=submit]');
     this.feed = this.$el.data('tweets-ul');
-    // this.userId = this.submitButton.data('user-id');
-    // this.body = this.$el.find('textarea');
+    this.charsLeft = $(this.$el.find('.chars-left')[0]);
+    this.body = this.$el.find('textarea');
     this.submit();
+    this.charsCount();
   }
 
   clearInput() {
@@ -17,9 +18,8 @@ class TweetCompose {
 
   handleSuccess(tweetData) {
     this.clearInput();
-    console.log(this.feed);
     // let tweetData = JSON.stringify(data);
-    let tweetString = `${tweetData.content} -- ${tweetData.user.username} -- ${tweetData.created_at}`;
+    let tweetString = `${tweetData.content} -- <a href="/users/${tweetData.user_id}">${tweetData.user.username}</a> -- ${tweetData.created_at}`;
     $(this.feed).prepend($(`<li>${tweetString}</li>`));
   }
 
@@ -30,6 +30,16 @@ class TweetCompose {
       APIUtil.createTweet(tweetData).then((data) => {
         this.handleSuccess(data);
       });
+    });
+  }
+
+  charsCount() {
+    this.body.on('input', (e) => {
+      let tweetBody = $(this.body[0]);
+      if (tweetBody[0].value.length >= 140) {
+        tweetBody[0].value = tweetBody[0].value.substring(0, 140);
+      }
+      this.charsLeft.text(140-this.body[0].value.length);// = 140 - this.body[0].value.length;
     });
   }
 }
